@@ -1,0 +1,510 @@
+---
+geometry: margin=1in
+fontsize: 12pt
+documentclass: report
+output: 
+  pdf_document: 
+      fig_caption: yes
+      citation_package: natbib
+      highlight: tango
+bibliography: lazbibreg.bib
+biblio-style: jabes
+subparagraph: yes
+header-includes:
+  
+  \usepackage{mdwlist}
+  \usepackage[compact]{titlesec}
+  \usepackage{titling}
+  \usepackage[font=small,labelfont=bf,tableposition=top]{caption}
+  \usepackage{float}
+  \floatstyle{plaintop}
+ \restylefloat{table}
+  \usepackage{lastpage} 
+  \usepackage{hyperref}
+  \usepackage{colortbl}
+  \usepackage{array}
+  \hypersetup{backref,colorlinks=true}
+  \usepackage{framed,color}
+  \definecolor{shadecolor}{rgb}{0.95, 0.92, 0.88}
+  \usepackage{graphicx}
+  \usepackage{booktabs}
+  \usepackage{fancyhdr}
+  \usepackage[none]{hyphenat}
+  \raggedright
+  \usepackage{amsmath, amsthm, amssymb, bm}
+  \usepackage{marginnote}
+  \usepackage{subfig}
+  \def\mygraphcaption{Here are my graphs.}
+  \newlength{\mygraphwidth}\setlength{\mygraphwidth}{0.9\textwidth}
+  \usepackage{listings}
+---
+  \lstset{
+	basicstyle=\small\ttfamily,
+	columns=flexible,
+	breaklines=true}
+	
+  \pagestyle{fancy}
+  \fancyhead[L]{\textbf{Xiaowen(Lee) Li, Omid Nabavizadeh}}
+  \fancyhead[C]{}
+  \fancyhead[R]{\textbf{STAT 823 Project}}
+  \fancyfoot[L]{}
+  \fancyfoot[C]{}
+  \fancyfoot[R]{Page -\thepage- of \pageref{LastPage}}
+  \fancypagestyle{plain}{\pagestyle{fancy}}
+  \renewcommand{\headrulewidth}{2pt}
+  \renewcommand{\footrulewidth}{2pt}
+ 
+ \hypersetup{
+	colorlinks   = true,
+	citecolor    = blue,
+	linkcolor    = black,
+	urlcolor     = blue
+  }
+  
+  \begin{titlepage}
+   \begin{center}
+       \vspace*{2cm}
+        
+       \vspace{0.5cm}
+ 
+       \textbf{\textit{\LARGE  Finding the greatest impact on the number of websites developed and delivered to customers per quarter}}
+ 
+       \vspace{0.5cm}
+      
+       \textbf{\Large STAT 823: Spring Class Project, 2020} 
+       
+        \vspace{0.5cm}
+        
+        \textbf{\large Xiaowen(Lee) Li, Omid Nabavizadeh}
+        
+       \vfill
+ 
+       \vspace{0.7cm}
+ 
+       \includegraphics[width=0.4\textwidth]{figures/ku}
+ 
+       \large Department of Biostatistics and Data Science \\
+       University of Kansas, USA \\
+       `r format(Sys.time(), '%B %e, %Y')`
+ 
+   \end{center}
+\end{titlepage}
+  
+```{r setup, include=FALSE}
+# load packages
+library(knitr)
+library(formatR)
+library(stargazer)
+library(xtable)
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 5, width = 60, xtable.comment = FALSE)
+opts_chunk$set(tidy.opts = list(width.cutoff=60), tidy=TRUE)
+out_type <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+```
+
+ \setlength{\headheight}{45pt}
+ 
+\thispagestyle{empty}
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+\pagestyle{plain}
+\tableofcontents
+\cleardoublepage
+\phantomsection
+\listoftables
+\phantomsection
+\listoffigures
+\newpage
+\pagenumbering{arabic}
+
+\section{Abstract}
+
+\subsection{Introduction}
+Website development is an important topic in today’s society when trying to deliver to customers in a timely fashion. The purpose of this study is to observe the greatest relationship impact between number of websites developed amongst different groups per quarter period. 
+
+\subsection{Methods} 
+Kutner et al. data set was used during the evaluation of the study. In order to compare each variable, a one-way ANOVA was observed when comparing each variable to ‘delivered’. From there, a goodness of fit test was created showing the differences.
+
+\subsection{Results}
+We saw no significant differences between delivered with Teamnum and Backlog. However, there were significant differences between delivered with Change, Year, Experience, and Quarter (p < 0.05). 
+
+\subsection{Conclusion}
+We see that Change, Year, Experience, and Quarter all had the greatest impact on website development when it comes to delivering to customer. 
+
+\newpage
+
+\section{Introduction}
+
+The web has become a necessity in everyday society, especially during today’s pandemic. Having a proper website can be beneficial within several different factors, such as; businesses, academia, communications, personal gain, etc.  In order to have a successful website to provide adequate amounts of information, one needs to have the proper amount of website development knowledge to create the website. That being said managers have limited abilities in web development \citet{3}. With such a large business inventory, means for a greater demand in website development within the marketplace. 
+ 
+It would be crucial for small businesses to engage in website development. Most small businesses fail due to the lack of resources at hand \citet{1}. With web developments making an impact on everyday business, small business owners can grow their company to a wider range of customers \citet{2}.
+
+The purpose of this study is to observe the relationships between number of websites developed amongst different groups per quarter period. When observing each variable, the variable with the greatest impact on website deliverability for customers will be taken into consideration. In turn, customers will have a better experience with the company, which equivalates to better business for the company. 
+
+\subsection{Primary Analysis Objectives}
+
+This study is to look for the variable with the greatest amount of impact for a certain company’s development in websites. It is also to insure they are delivered to the customer per time period. 
+
+
+\section{Materials and Methods}
+
+\subsection{Data Sources}
+
+The dataset was obtained from one of the published datasets by \citet{kutner} [Here are the book's datasets](http://users.stat.ufl.edu/~rrandles/sta4210/Rclassnotes/data/textdatasets/index.html). 
+Data were collected on the website production output for 13 three-person website development teams, from January 2001 through August 2002. Each line of the data set has an identification number providing information on 6 other variables for thirteen teams over time. The 8 variables are listed below: 
+
+
+
+```{r, echo = FALSE, warning = FALSE}
+#install.packages('readxl')
+library('readxl')
+Vari <- read_xlsx("variable.xlsx",sheet = 1)
+WEB <- read_xlsx("website.xlsx",sheet = 1)
+```
+
+```{r tab1,  echo=FALSE, results="asis", message=FALSE,  tidy.opts = list(width.cutoff=30)}
+kable(Vari, 
+       caption = c("Variables of the dataset"))
+```
+```{r tab2,  echo=FALSE, results="asis", message=FALSE,  tidy.opts = list(width.cutoff=30)}
+kable(WEB, 
+       caption = c("Dataset"))
+```
+
+
+
+\subsection{Statistical Analysis}
+
+The data is provided in .xlsx (excel) format. The data analysis is done using the statistical software R and written in `r R.version.string` [R](https://www.r-project.org/) \citep{r2018}.
+R packages used will be maintained using the [packrat](http://rstudio.github.io/packrat/) dependency management system. 
+This project focuses mainly on a one-way ANOVA test within categorical variables. Each of the independent variable is explored individually with the response variable 'delivered' then compared. 
+
+
+\subsubsection{Model Assumptions}
+
+All inferences are conducted using $\alpha = 0.05$.
+
+No adjustments for multiplicity are made as this is an exploratory analysis. 
+
+Discrete variables are summarized with proportions and frequencies. Directly from the provided dataset, all variables are formed by integers so we can treat them as categorical variables. Variable 'teamnum', 'change', 'year', 'quarter' are intuitive. And for variables 'backlog' and 'experience' they have as many levels to be considered as continuous variables but in order to make the comparison of the results among all variables more organized, we use cut function to divide their elements into fewer levels and then treat them same as other categorical variables using a one-way ANOVA.  
+
+To apply the one-way ANOVA test, it is assumed that each factor is randomly sampled, independent and comes from a normally distributed population with unknown but equal variances. 
+
+\subsubsection{Goodness of Fit Test}
+
+Goodness of fit test will be used in order to test the statistical results found by linear regression and produce the final result. 
+
+\section{Results}
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+t1 <- summary(WEB[,2:5])
+```
+
+```{r tab4,  echo=FALSE, results="asis", message=FALSE,  tidy.opts = list(width.cutoff=30)}
+xtable(t1, row.names = FALSE, label="tab:tab4",
+       caption = c("Basic Statistics for Dataset Variables"))
+xtable(summary(WEB[6:8]))
+```
+
+\subsection{Proportions and frequencies for discrete variables} 
+```{r tab3,  echo=FALSE, results="asis", message=FALSE}
+
+#discrete variables
+
+#https://stackoverflow.com/questions/15111629/create-summary-table-of-categorical-variables-of-different-lengths
+
+Table <- function(x) {
+
+   tbl <- apply(x, 2, function(m) {
+    marc <- sort(unique(m))
+    cnt <- matrix(table(m), ncol = 1)
+    out <- cbind(marc, cnt)
+    out <- out[order(marc), ] # do sorting
+    out <- cbind(out, round(prop.table(out, 2)[, 2] * 100, 2))
+  })
+
+  x2 <- do.call("rbind", tbl)
+
+  spaces <- unlist(lapply(apply(x, 2, unique), length))
+  space.names <- names(spaces)
+  spc <- rep("", sum(spaces))
+  ind <- cumsum(spaces)
+  ind <- abs(spaces - ind)+1
+  spc[ind] <- space.names
+
+  out <- cbind(spc, x2)
+
+  out <- kable(as.data.frame(out),col.names =  c("Variable", "Levels", "Count", "Column N %"),caption = "Proportions and frequencies for discrete variables")
+  
+  out
+}
+library(plyr)
+df <- WEB[,6:8]
+Table(df)
+```
+
+
+\subsection{ANOVA Analysis} 
+
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+max(WEB$backlog)
+min(WEB$backlog)
+
+Backlog<-as.factor(cut(WEB$backlog, seq(0,50,5), right=FALSE))
+summary(Backlog)
+
+max(WEB$experience)
+min(WEB$experience)
+
+Experience<-as.factor(cut(WEB$experience, seq(0,24,3), right=FALSE))
+summary(Experience)
+library(ggplot2)
+
+
+
+summary(aov(delivered ~ Backlog, data = WEB))
+
+
+
+summary(aov(delivered ~ Experience, data = WEB))
+```
+
+```{r figure1, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to backlog of orders ", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+ggplot(WEB, aes(x = Backlog, y = delivered, fill = Backlog)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+```
+
+```{r figure2, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to team experience	", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+
+ggplot(WEB, aes(x = Experience, y = delivered, fill = Experience)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+
+```
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+#ANOVA
+Teamnum = as.factor(WEB$teamnum)
+levels(Teamnum)
+summary(aov(delivered ~ Teamnum, data = WEB))
+```
+
+```{r figure3, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to team number", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+
+ggplot(WEB, aes(x = Teamnum, y = delivered, fill = Teamnum)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+
+```
+
+
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+Change = as.factor(WEB$change)
+levels(Change)
+summary(aov(delivered ~ Change, data = WEB))
+```
+
+```{r figure4, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to change in the website development process  ", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+ggplot(WEB, aes(x = Change, y = delivered, fill = Change)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+```
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+Year = as.factor(WEB$year)
+levels(Year)
+summary(aov(delivered ~ Year, data = WEB))
+```
+
+```{r figure5, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to year", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+ggplot(WEB, aes(x = Year, y = delivered, fill = Year)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+```
+
+```{r, echo = FALSE, message=FALSE, include = FALSE}
+Quarter = as.factor(WEB$quarter)
+levels(Year)
+summary(aov(delivered ~ Quarter, data = WEB))
+```
+
+```{r figure6, echo=FALSE, include=TRUE, message=FALSE, fig.cap="ANOVA: website delivery with reference to quarter", fig.pos="H", fig.align='center', out.width="0.6\\linewidth"}
+ggplot(WEB, aes(x = Quarter, y = delivered, fill = Quarter)) +
+    geom_boxplot() +
+    geom_jitter(shape = 15,
+        color = "steelblue",
+        position = position_jitter(0.21)) +
+    theme_classic()
+```
+\subsection{ANOVA P-value result}
+```{r tab5,  echo=FALSE, results="asis", message=FALSE,  tidy.opts = list(width.cutoff=30)}
+pvalue <- read_xlsx("pvalue.xlsx",sheet = 1)
+pvalue$`P-values` <- as.array(pvalue$`P-values`)
+kable(pvalue, 
+       caption = c("P-values"))
+```
+
+For Teamnum, there was no interaction between delivered and Teamnum (p = 0.220), because p > 0.05, we fail to reject the null hypothesis. 
+
+For Backlog, there was no interaction between Backlog and delivered (p = 0.066), because p > 0.05, we fail to reject the null hypothesis. 
+
+However, for the rest of the variables, we see p < 0.05 we reject the null hypothesis as follows.
+
+For Change, there was an interaction between delivered and Change (p = 1.9e-11; F-value = 63.4). 
+
+There was also an interaction between Year and delivered (p = 4.3e-07; F-value = 31). 
+
+For Quarter, there was an interaction between delivered and Quarter (p = 2e-04; F-value = 7.51). 
+
+For Experience, there was an interaction between the two factors (p = 0.014; F-value = 2.77). 
+
+
+
+\section{Discussion and Conclusion}
+
+In order to look at these variables closely, we needed to convert each variable into categorical data. There was a mix between continued and categorical. However, to clearly observe the data, we separated each data variable into intervals of 3 time points. In order to convert data into categorical data, we needed to view the structure of each variable and look at each name categorically \citet{6}
+
+When looking at each of the variables, we see that two of the six variables failed to reject the null hypothesis. However, Backlog was close to being significant with a P-value of 0.066. This could be due to margin of error within the data analysis and/or data itself. The other four variables did, however, reject the null hypothesis and showed beneficial data towards website developments for a company’s delivery. Change, Year, Quarter, and Experience all showed significant increases within web development allowing for an increase in deliverability services to customers with a P-value < 0.05. With such high F-values for each variable, this strongly encourages that they will make a difference in web development, especially Change and Year with F-Values of 63.4 and 31, respectively.
+
+\newpage
+
+\section{Appendix: R-code}
+
+\begin{lstlisting}
+library(knitr)
+library(formatR)
+library(stargazer)
+library(xtable)
+library(readxl)
+library(plyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+options(digits = 5, width = 60, xtable.comment = FALSE)
+opts_chunk$set(tidy.opts = list(width.cutoff=60), tidy=TRUE)
+out_type <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+#read in data and variable name
+Vari <- read_xlsx("variable.xlsx",sheet = 1)
+WEB <- read_xlsx("website.xlsx",sheet = 1)
+#print the 1st table:variable names
+kable(Vari,  caption = c("Variables of the dataset"))
+#print the 2nd table:
+kable(WEB, caption = c("Dataset"))
+#discrete
+t1 <- summary(WEB[,2:5])
+xtable(t1, row.names = FALSE, label="tab:tab4",
+       caption = c("Basic Statistics for Dataset Variables"))
+xtable(summary(WEB[6:8]))
+#function to produce an analysis of discrete variables[see reference]
+Table <- function(x) {
+  
+  tbl <- apply(x, 2, function(m) {
+    marc <- sort(unique(m))
+    cnt <- matrix(table(m), ncol = 1)
+    out <- cbind(marc, cnt)
+    out <- out[order(marc), ] # do sorting
+    out <- cbind(out, round(prop.table(out, 2)[, 2] * 100, 2))
+  })
+  x2 <- do.call("rbind", tbl)
+  spaces <- unlist(lapply(apply(x, 2, unique), length))
+  space.names <- names(spaces)
+  spc <- rep("", sum(spaces))
+  ind <- cumsum(spaces)
+  ind <- abs(spaces - ind)+1
+  spc[ind] <- space.names
+  out <- cbind(spc, x2)
+  out <- kable(as.data.frame(out),
+               col.names =  c("Variable", "Levels", "Count", "Column N %"),
+               caption = "Proportions and frequencies for discrete variables")
+  
+  out
+}
+
+df <- WEB[,6:8]
+Table(df)
+#One way ANOVA
+#convert to categorical variables and convert to factors
+max(WEB$backlog)
+min(WEB$backlog)
+Backlog<-as.factor(cut(WEB$backlog, seq(0,50,5), right=FALSE))
+summary(Backlog)
+max(WEB$experience)
+min(WEB$experience)
+Experience<-as.factor(cut(WEB$experience, seq(0,24,3), right=FALSE))
+summary(Experience)
+Teamnum = as.factor(WEB$teamnum)
+levels(Teamnum)
+Change = as.factor(WEB$change)
+levels(Change)
+Year = as.factor(WEB$year)
+levels(Year)
+Quarter = as.factor(WEB$quarter)
+levels(Year)
+#print the figures of ANOVA test
+ggplot(WEB, aes(x = Backlog, y = delivered, fill = Backlog)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+ggplot(WEB, aes(x = Experience, y = delivered, fill = Experience)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+ggplot(WEB, aes(x = Teamnum, y = delivered, fill = Teamnum)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+ggplot(WEB, aes(x = Change, y = delivered, fill = Change)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+ggplot(WEB, aes(x = Year, y = delivered, fill = Year)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+ggplot(WEB, aes(x = Quarter, y = delivered, fill = Quarter)) +
+  geom_boxplot() +
+  geom_jitter(shape = 15,
+              color = "steelblue",
+              position = position_jitter(0.21)) +
+  theme_classic()
+#ANOVA p-value
+summary(aov(delivered ~ Backlog, data = WEB))
+summary(aov(delivered ~ Experience, data = WEB))
+summary(aov(delivered ~ Teamnum, data = WEB))
+summary(aov(delivered ~ Change, data = WEB))
+summary(aov(delivered ~ Year, data = WEB))
+summary(aov(delivered ~ Quarter, data = WEB))
+#print p-value 
+pvalue <- read_xlsx("pvalue.xlsx",sheet = 1)
+pvalue$`P-values` <- as.array(pvalue$`P-values`)
+kable(pvalue, 
+       caption = c("P-values"))
+\end{lstlisting}
